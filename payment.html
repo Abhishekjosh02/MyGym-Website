@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Make Payment</title>
+    <link rel="stylesheet" href="member.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Make a Payment</h2>
+
+        <label for="membershipPlan">Membership Plan:</label>
+        <select id="membershipPlan">
+            <option value="basic">Basic - $20/month</option>
+            <option value="standard">Standard - $35/month</option>
+            <option value="premium">Premium - $50/month</option>
+        </select>
+
+        <br/><br/>
+
+        <label for="paymentMethod">Payment Method:</label>
+        <select id="paymentMethod">
+            <option value="creditCard">Credit Card</option>
+            <option value="debitCard">Debit Card</option>
+            <option value="paypal">PayPal</option>
+            <option value="cash">Cash</option>
+        </select>
+
+        <br/><br/>
+
+        <button id="submitPayment">Submit Payment</button>
+    </div>
+
+    <script>
+        document.getElementById('submitPayment').addEventListener('click', () => {
+            const membershipPlan = document.getElementById('membershipPlan').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            alert(`Payment submitted!\nMembership Plan: ${membershipPlan}\nPayment Method: ${paymentMethod}`);
+            // Here you can add actual payment processing logic
+        });
+    </script>
+</body>
+</html>

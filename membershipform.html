@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gym Membership Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #cce7ff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #e6f2ff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #218838;
+      cursor: pointer;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+    }
+
+    .success {
+      color: green;
+      text-align: center;
+    }
+
+    #popup {
+      display: none;
+      text-align: center;
+      margin-top: 15px;
+      background: #fff;
+      padding: 15px;
+      border: 2px solid #28a745;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Join Our Gym</h2>
+    <form id="membershipForm" action="save_membership.php" method="POST">
+
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="age">Age</label>
+      <input type="number" id="age" name="age" min="16" max="100" required>
+
+      <label for="plan">Membership Plan</label>
+      <select id="plan" name="plan" required>
+        <option value="">--Select Plan--</option>
+        <option value="monthly">Monthly - $30</option>
+        <option value="quarterly">Quarterly - $80</option>
+        <option value="yearly">Yearly - $300</option>
+      </select>
+
+      <label for="paymentMethod">Payment Method</label>
+      <select id="paymentMethod" name="paymentMethod" required>
+        <option value="">--Select Method--</option>
+        <option value="card">Card</option>
+        <option value="upi">UPI</option>
+      </select>
+
+      <div id="cardDetails" style="display:none;">
+        <label for="cardNumber">Card Number</label>
+        <input type="text" id="cardNumber" name="cardNumber" maxlength="16">
+
+        <label for="expiry">Expiry Date (MM/YY)</label>
+        <input type="text" id="expiry" name="expiry" placeholder="MM/YY">
+
+        <label for="cvv">CVV</label>
+        <input type="text" id="cvv" name="cvv" maxlength="3">
+      </div>
+
+      <div id="upiDetails" style="display:none;">
+        <label for="upiId">UPI ID</label>
+        <input type="text" id="upiId" name="upiId" placeholder="example@upi">
+      </div>
+
+      <button type="submit">Submit & Pay</button>
+      <p id="message"></p>
+    </form>
+
+    <div id="popup">
+      <strong>Your Code:</strong> <span id="popupCode"></span>
+    </div>
+  </div>
+
+  <script>
+    const paymentMethod = document.getElementById('paymentMethod');
+    const cardDetails = document.getElementById('cardDetails');
+    const upiDetails = document.getElementById('upiDetails');
+    const popup = document.getElementById('popup');
+    const popupCode = document.getElementById('popupCode');
+    const message = document.getElementById('message');
+
+    // Show/hide payment fields
+    paymentMethod.addEventListener('change', function () {
+      if (this.value === 'card') {
+        cardDetails.style.display = 'block';
+        upiDetails.style.display = 'none';
+      } else if (this.value === 'upi') {
+        cardDetails.style.display = 'none';
+        upiDetails.style.display = 'block';
+      } else {
+        cardDetails.style.display = 'none';
+        upiDetails.style.display = 'none';
+      }
+    });
+
+    // Luhn Algorithm for card number validation
+    function luhnCheck(number) {
+      let sum = 0;
+      let double = false;
+      for (let i = number.length - 1; i >= 0; i--) {
+        let digit = parseInt(number.charAt(i));
+        if (double) {
+          digit *= 2;
+          if (digit > 9) digit -= 9;
+        }
+        sum += digit;
+        double = !double;
+      }
+      return sum % 10 === 0;
+    }
+
+    // Form submission logic
+    document.getElementById('membershipForm').addEventListener('submit', function (e) {
+      e.preventDefault(); // Stop default form submission
+
+      const method = paymentMethod.value;
+      const cardNumber = document.getElementById('cardNumber').value.trim();
+      const expiry = document.getElementById('expiry').value.trim();
+      const cvv = document.getElementById('cvv').value.trim();
+      const upiId = document.getElementById('upiId').value.trim();
+
+      message.textContent = "";
+      message.className = "";
+
+      if (!method) {
+        message.textContent = "❌ Please select a payment method.";
+        message.className = "error";
+        return;
+      }
+
+      // Card Validation
+      if (method === 'card') {
+        if (!/^\d{16}$/.test(cardNumber) || !luhnCheck(cardNumber)) {
+          message.textContent = "❌ Invalid card number! Please enter a valid bank-issued card.";
+          message.className = "error";
+          return;
+        }
+
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
+          message.textContent = "❌ Invalid expiry format! Use MM/YY.";
+          message.className = "error";
+          return;
+        }
+
+        if (!/^\d{3}$/.test(cvv)) {
+          message.textContent = "❌ Invalid CVV! Must be 3 digits.";
+          message.className = "error";
+          return;
+        }
+      }
+
+      // UPI Validation (only allow known bank handles)
+      if (method === 'upi') {
+        const validUPIDomains = [
+          '@sbi', '@hdfcbank', '@okicici', '@icici', '@axis', '@kotak',
+          '@pnb', '@bankofbaroda', '@bob', '@unionbank', '@union',
+          '@canarabank', '@canara', '@indianbank', '@indian'
+        ];
+
+        const isValidUPI = validUPIDomains.some(domain => upiId.endsWith(domain));
+
+        if (!isValidUPI || !/^[\w.\-]+@[\w.\-]+$/.test(upiId)) {
+          message.textContent = "❌ Invalid UPI ID!";
+          message.className = "error";
+          return;
+        }
+      }
+
+      // If all validations pass
+      const randomCode = Math.floor(1000 + Math.random() * 9000);
+      popupCode.textContent = randomCode;
+      popup.style.display = 'block';
+
+      message.textContent = "✅ Your form is being submitted...";
+      message.className = "success";
+
+      setTimeout(() => {
+        e.target.submit(); // Submit the form after delay
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

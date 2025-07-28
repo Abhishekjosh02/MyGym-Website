@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gym Attendance</title>
+  <link rel="stylesheet" href="Attendance.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Member Attendance</h2>
+    <form id="attendanceForm" action="mark_attendance.php" method="POST" onsubmit="return validateCode()">
+      <label for="code">Enter Your 4-Digit Code:</label>
+      <input type="text" id="code" name="code" maxlength="4" placeholder="e.g. 1234" required>
+      <button type="submit">Submit</button>
+      <p id="errorMsg"></p>
+    </form>
+  </div>
+
+  <script src="Attendance.js"></script>
+</body>
+</html>

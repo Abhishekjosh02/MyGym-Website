@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gym Member Fee Details</title>
+    <link rel="stylesheet" href="member.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Member Fee Dashboard</h2>
+        <input type="number" id="memberId" placeholder="Enter Member ID" />
+        <button onclick="getMemberDetails()">Get Details</button>
+
+        <div id="memberInfo" class="info" style="display:none;"></div>
+        <div id="countdown" class="countdown" style="display:none;"></div>
+        <div id="error" class="error" style="display:none;"></div>
+
+        <!-- Payment Section -->
+        <button id="paymentButton" style="margin-top: 20px; display:none;" onclick="window.location.href='makepayment.html'">Make Payment</button>
+    </div>
+
+    <script src="js/member.js"></script>
+</body>
+</html>
